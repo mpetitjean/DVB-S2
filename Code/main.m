@@ -13,5 +13,4 @@ message_bits = text2bits(message);
 symb_tx = mapping(message_bits,Nbps,modulation);
 
 % Add noise
-message_noisy = noise(message_bits, 1, 10, 151);
-
+message_noisy = noise(message_bits, 1, 1, 20);
