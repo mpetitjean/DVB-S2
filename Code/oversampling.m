@@ -8,7 +8,7 @@ function m = oversampling(m_base, f_m, f_s)
 % Oversamples the message m_base from frenquency f_m to frenquency f_s
 
 N = length(m_base);
-r = f_s/f_m; % oversampling factor
+r = f_s/f_m; 			% oversampling factor
 
 m = zeros(1,N*r);
 for i=1:N
