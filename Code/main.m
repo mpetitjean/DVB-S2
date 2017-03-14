@@ -7,7 +7,11 @@ f_samp	= 20e3;
 
 Nbps = 6;
 modulation = 'qam';
-N = 100*Nbps;
+N = 10000*Nbps;
+
+ratio_min = 1;     % Different E_b/N0 values
+step = 10;
+ratio_max = 551;  
 
 % Message generation
 bits = randi(2,1,N)-1;      % random bits generation
@@ -19,11 +23,10 @@ symb_tx = mapping(bits,Nbps,modulation)';
 
 % Upsampling
 message_symb = oversampling(symb_tx, f_sym, f_samp);
-
 % Nyquist
 
 % Add noise
-message_noisy = noise(message_symb, 1, 1, 20, f_samp);
+message_noisy = noise(message_symb, ratio_min, step, ratio_max, f_samp);
 
 % Nyquist
 
@@ -41,7 +44,11 @@ for i = 1:num
 end
 
 % Compute BER and plot
-compute_ber(bits, bits_rx, num);
+ber = compute_ber(bits, bits_rx, num);
+semilogy(10*log10(ratio_min:step:ratio_max),ber);
+xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
+ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
+grid on;
 
 
 

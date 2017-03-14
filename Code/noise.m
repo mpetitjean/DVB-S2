@@ -18,7 +18,7 @@ message_noisy = zeros(length(ratio),length(message));
 for i = 1:length(ratio)
 	% Compute N0 corresponding to the wanted SNR then add noise
 	N0 = 1/(2*length(message)*f_samp)*sum(message.^2)/ratio(i);
-	sigma = sqrt(N0*f_samp);
+	sigma = sqrt(N0*f_samp)*50;
 	for k = 1:length(message)
 		message_noisy(i,k) = sigma*(randn(1) + 1i*randn(1)) + message(k);
     end

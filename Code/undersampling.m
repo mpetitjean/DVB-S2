@@ -11,5 +11,5 @@ N = length(m_sampled);
 r = f_s/f_m; % oversampling factor
 m = zeros(1,N/r);
 for i=1:N/r
-    m(i) = sum(m_sampled((i-1)*r+1:i*r))/r; % copies r times the ith value of m_base
+    m(i) = sum(m_sampled((i-1)*r+1:i*r))/r;
 end
