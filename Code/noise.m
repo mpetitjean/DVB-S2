@@ -1,4 +1,4 @@
-function message_noisy = noise(message, ratio_min, step, ratio_max, f_samp, Nbps)
+function message_noisy = noise(message, ratio_min, step, ratio_max, f_samp, E_b)
 
 % Compute a matrix, each line being the noisy message with different SNR
 % 
@@ -15,11 +15,12 @@ function message_noisy = noise(message, ratio_min, step, ratio_max, f_samp, Nbps
 ratio = ratio_min:step:ratio_max;
 message_noisy = zeros(length(ratio),length(message));
 
+figure;
 for i = 1:length(ratio)
 	% Compute N0 corresponding to the wanted SNR then add noise
-	N0 = 1/(2*length(message)*f_samp)*sum(message.^2)/ratio(i);
-	sigma = sqrt(N0*f_samp)*50;
-	for k = 1:length(message)
-		message_noisy(i,k) = sigma*(randn(1) + 1i*randn(1)) + message(k);
-    end
+	N0 = E_b/ratio(i);
+	sigma = N0*f_samp*2;
+	message_noisy(i,:) = sqrt(sigma/2).*(randn(1,length(message)) + 1i*randn(1,length(message))) + message;
+    semilogy(i,N0, '-x');
+    hold on
 end
