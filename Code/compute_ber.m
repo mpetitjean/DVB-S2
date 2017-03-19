@@ -13,4 +13,4 @@ for i = 1:num
     end
 end
 
-%ber = ber./N;
+ber = ber./N;

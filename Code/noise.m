@@ -18,9 +18,9 @@ message_noisy = zeros(length(ratio),length(message));
 figure;
 for i = 1:length(ratio)
 	% Compute N0 corresponding to the wanted SNR then add noise
-	N0 = E_b/ratio(i);
-	sigma = N0*f_samp*2;
-	message_noisy(i,:) = sqrt(sigma/2).*(randn(1,length(message)) + 1i*randn(1,length(message))) + message;
+	N0 = E_b/(10^(ratio(i)/10));
+	noisePower = N0*f_samp*2;
+	message_noisy(i,:) = sqrt(noisePower/2)*(randn(1,length(message)) + 1i*randn(1,length(message))) + message;
     semilogy(i,N0, '-x');
     hold on
 end
