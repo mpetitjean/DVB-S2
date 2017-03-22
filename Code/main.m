@@ -21,9 +21,14 @@ bits = randi(2,1,N)-1;      % random bits generation
 % Mapping
 symb_tx = mapping(bits,Nbps,modulation).';
 E_b = 1/(2*f_samp*length(symb_tx))*(trapz(abs(symb_tx).^2));
+figure;
+plot(symb_tx(1,:), 'x');
+title('Tx');
+grid on;
 
 % Upsampling
-message_symb = oversampling(symb_tx, f_sym, f_samp);
+%message_symb = oversampling(symb_tx, f_sym, f_samp);
+message_symb = upsample(symb_tx, f_samp/f_sym);
 
 % Nyquist
 nyquist_impulse = nyquist(taps, rolloff, f_samp, f_sym);
@@ -46,10 +51,12 @@ message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
 % Downsampling
 symb_rx = zeros(num, length(symb_tx));
 for i = 1:num
-    symb_rx(i,:) = undersampling(message_noisy_n(i,:), f_sym, f_samp);
+    %symb_rx(i,:) = undersampling(message_noisy_n(i,:), f_sym, f_samp);
+    symb_rx(i,:) = downsample(message_noisy_n(i,:), f_samp/f_sym);
 end
 figure;
 plot(symb_rx(1,:), 'x');
+title('Rx');
 grid on;
 
 % Demapping
@@ -60,8 +67,8 @@ end
 
 % Compute BER and plot
 ber = compute_ber(bits, bits_rx, num);
-figure;
-semilogy(ratio_min:step:ratio_max,ber, '-o');
-xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
-ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
-grid on;
+% figure;
+% semilogy(ratio_min:step:ratio_max,ber, '-o');
+% xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
+% ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
+% grid on;
