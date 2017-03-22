@@ -15,7 +15,6 @@ function message_noisy = noise(message, ratio_min, step, ratio_max, f_samp, E_b)
 ratio = ratio_min:step:ratio_max;
 message_noisy = zeros(length(ratio),length(message));
 
-figure;
 for i = 1:length(ratio)
 	% Compute N0 corresponding to the wanted SNR then add noise
 	N0 = E_b/(10^(ratio(i)/10));
