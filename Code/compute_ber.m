@@ -6,9 +6,6 @@ for i = 1:num
     for k = 1:N
         if ( bits_tx(k) ~= bits_rx(i,k))
             ber(1,i) = ber(1,i) + 1;
-            if (i ~= 1)
-                disp('ça bug plus')
-            end
         end
     end
 end

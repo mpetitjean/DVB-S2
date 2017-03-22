@@ -5,7 +5,7 @@ function m = undersampling(m_sampled, f_m, f_s)
 % - f_s : sampling frequency
 % OUTPUT :
 % - m : oversampled message
-% Oversamples the message m_base from frenquency f_m to frenquency f_s
+% Undersamples the message m_base from frenquency f_s to frenquency f_m
 
 N = length(m_sampled);
 r = f_s/f_m; % oversampling factor
