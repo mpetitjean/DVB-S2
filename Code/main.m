@@ -5,7 +5,8 @@ close all;
 f_sym 	= 2e6;
 f_samp	= 8e6;
 
-Nbps = 2;
+Nbps = 8;
+
 N = 1e6*Nbps;
 taps = 101;
 rolloff = 0.3;
@@ -46,7 +47,7 @@ message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 num = size(message_noisy,1);
 message_noisy_n = zeros(num, length(message_noisy)+length(nyquist_impulse)-1);
 normalization = max(real(conv(nyquist_impulse, nyquist_impulse)));
-for i = 1:num
+parfor i = 1:num
 	message_noisy_n(i,:) = conv(message_noisy(i,:), fliplr(nyquist_impulse))./normalization;
 end
 
@@ -55,7 +56,7 @@ message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
 
 % Downsampling
 symb_rx = zeros(num, length(symb_tx));
-for i = 1:num
+parfor i = 1:num
     %symb_rx(i,:) = undersampling(message_noisy_n(i,:), f_sym, f_samp);
     symb_rx(i,:) = downsample(message_noisy_n(i,:), f_samp/f_sym);
 end
@@ -66,7 +67,7 @@ end
 
 % Demapping
 bits_rx = zeros(num, length(bits));
-for i = 1:num
+parfor i = 1:num
     if(Nbps > 1)
         bits_rx(i,:) = demapping(symb_rx(i,:).',Nbps,'qam');
     else
@@ -76,8 +77,8 @@ end
 
 % Compute BER and plot
 ber = compute_ber(bits, bits_rx, num);
-figure;
-semilogy(ratio_min:step:ratio_max,ber, '-o');
-xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
-ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
-grid on;
+%figure;
+%semilogy(ratio_min:step:ratio_max,ber, '-o');
+% xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
+% ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
+% grid on;
