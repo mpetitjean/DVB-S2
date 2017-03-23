@@ -10,16 +10,17 @@
 \begin{tikzpicture}
 
 \begin{axis}[%
-width=11.028in,
-height=5.45in,
+width=.9\textwidth,
+height=0.4\textheight,
 at={(1.85in,0.736in)},
 scale only axis,
-xmin=-1.5e-05,
-xmax=1.5e-05,
+xmin=-1.2e-05,
+xmax=1.2e-05,
 xlabel style={font=\color{white!15!black}},
-xlabel={Time (s)},
+xlabel={Time},
+x unit=\second,
 ymin=-0.2,
-ymax=1,
+ymax=1.1,
 ylabel style={font=\color{white!15!black}},
 ylabel={Normalized amplitude},
 axis background/.style={fill=white},
@@ -231,7 +232,7 @@ legend style={legend cell align=left, align=left, draw=white!15!black}
 };
 \addlegendentry{Convolution of the impulse responses}
 
-\addplot [color=mycolor2, draw=none, mark=x, mark options={solid, mycolor2}]
+\addplot [color=mycolor2, draw=none, mark=*, mark options={solid, mycolor2}]
   table[row sep=crcr]{%
 -1.24999999999709e-05	1.50028813150627e-07\\
 -1.1999999999901e-05	-3.73660281827171e-07\\
