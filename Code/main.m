@@ -6,7 +6,7 @@ f_sym 	= 2e6;
 f_samp	= 8e6;
 
 Nbps = 2;
-N = 1e7*Nbps;
+N = 1e6*Nbps;
 taps = 101;
 rolloff = 0.3;
 
