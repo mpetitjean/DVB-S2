@@ -18,6 +18,8 @@ ratio_max = 20;
 % Message generation
 bits = randi(2,1,N)-1;      % random bits generation
 
+E_b = 1/(2*f_samp*length(bits))*(trapz(abs(bits).^2));
+
 % Mapping
 if(Nbps > 1)
     symb_tx = mapping(bits,Nbps,'qam').';
@@ -25,7 +27,7 @@ else
     symb_tx = mapping(bits,Nbps,'pam').';
 end
     
-E_b = 1/(2*f_samp*length(symb_tx))*(trapz(abs(symb_tx).^2));
+
 % figure;
 % plot(symb_tx(1,:), 'x');
 % title('Tx');
