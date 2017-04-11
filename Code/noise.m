@@ -21,3 +21,5 @@ parfor i = 1:length(ratio)
 	noisePower = N0*f_samp*2;
 	message_noisy(i,:) = sqrt(noisePower/2)*(randn(1,length(message)) + 1i*randn(1,length(message))) + message;
 end
+
+% brawgn()
