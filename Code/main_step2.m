@@ -4,23 +4,22 @@ close all;
 % Simulation parameters
 f_sym 	= 2e6;
 f_samp	= 8e6;
-Nbps = 8;
+Nbps = 6;
 taps = 101;
 rolloff = 0.3;
-ratio_min = 20;     % Different E_b/N0 values (dB)
+ratio_min = 5;     % Different E_b/N0 values (dB)
 step = 1;
-ratio_max = 20;  
+ratio_max = 5;
 maxit = 2;
 info_blksize = 128;
 code_rate = 1/2;
 code_blksize = 128/code_rate;
-N = info_blksize*Nbps*code_rate;
+N = info_blksize*Nbps*code_rate*100;
 
 % Message generation
 info_bits = randi(2,1,N)-1;      % random bits generation
 disp('Bits generated')
 
-E_b = 1/(2*f_samp*length(info_bits))*(trapz(abs(info_bits).^2));
 
 % LDPC coding
 % Create initial parity check matrix
@@ -57,6 +56,8 @@ nyquist_impulse = nyquist(taps, rolloff, f_samp, f_sym);
 message_symb_n = conv(message_symb, nyquist_impulse);
 disp('First RRC filter done')
 
+
+E_b = 1/(2*f_samp*N)*(trapz(abs(message_symb_n).^2));
 % Add noise
 message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 %message_noisy = message_symb_n;
