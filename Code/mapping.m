@@ -11,13 +11,13 @@ function [symb_tx] = mapping(bit_tx,Nbps,modulation)
 Nsymb = size(bit_tx',1)/Nbps; % Number of symbols
 bit_tx2 = reshape(bit_tx,Nbps,Nsymb)';
 
-switch modulation,
+switch modulation
     
     case 'pam'
         
         % Gray to binary
         mapp_tx(:,1) = bit_tx2(:,1);
-        for ii = 2:Nbps,
+        for ii = 2:Nbps
            mapp_tx(:,ii) = xor( mapp_tx(:,ii-1) , bit_tx2(:,ii) ); 
         end
 
@@ -36,7 +36,7 @@ switch modulation,
         
         % Gray to binary
         mapp_txI(:,1) = bit_tx2I(:,1);
-        for ii = 2:NbpsI,
+        for ii = 2:NbpsI
            mapp_txI(:,ii) = xor( mapp_txI(:,ii-1) , bit_tx2I(:,ii) ); 
         end
 
@@ -54,7 +54,7 @@ switch modulation,
         
         % Gray to binary
         mapp_txQ(:,1) = bit_tx2Q(:,1);
-        for ii = 2:NbpsQ,
+        for ii = 2:NbpsQ
            mapp_txQ(:,ii) = xor( mapp_txQ(:,ii-1) , bit_tx2Q(:,ii) ); 
         end
 
@@ -67,6 +67,6 @@ switch modulation,
        
         
         % COMPLEX SYMBOL
-        symb_tx = symb_txI + j*symb_txQ;
+        symb_tx = symb_txI + 1j*double(symb_txQ);
        
 end

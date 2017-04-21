@@ -96,7 +96,7 @@ for i = 1:M
    if i < M           
             
       % Find the later rows with non-zero elements in column i
-      [r2, c2] = find(F((i + 1):end, i));          
+      [r2, ~] = find(F((i + 1):end, i));          
       % Add current row to the later rows which have a 1 in column i
       F((i + r2), :) = mod(F((i + r2), :) + repmat(F(i, :), length(r2), 1), 2);
                                                            

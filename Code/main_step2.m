@@ -1,37 +1,41 @@
-clear;
-close all;
-
+% clear;
+% close all;
+function ber = main_step2(Nbps,precision, ratio_min, step, ratio_max, maxit)
 % Simulation parameters
 f_sym 	= 2e6;
 f_samp	= 8e6;
-Nbps = 6;
+% Nbps = 6;
 taps = 101;
 rolloff = 0.3;
-ratio_min = 5;     % Different E_b/N0 values (dB)
-step = 1;
-ratio_max = 5;
-maxit = 2;
+% ratio_min = -5;     % Different E_b/N0 values (dB)
+% step = 1;
+% ratio_max = 15;
+% maxit = 2;
 info_blksize = 128;
 code_rate = 1/2;
 code_blksize = 128/code_rate;
-N = info_blksize*Nbps*code_rate*100;
+N = info_blksize*Nbps*code_rate*precision;
 
 % Message generation
-info_bits = randi(2,1,N)-1;      % random bits generation
+info_bits = randi([0 1],[1 N]);      % random bits generation
 disp('Bits generated')
 
 
 % LDPC coding
 % Create initial parity check matrix
-H0 = makeLdpc(info_blksize,code_blksize,0,1,3); 
 
+H = makeLdpc(info_blksize,code_blksize,0,1,3);
+check_bits = zeros(info_blksize,N/info_blksize);
+info_bits = reshape(info_bits, info_blksize,N/info_blksize);
 % Encode information bits
-[check_bits, H] = makeParityChk(info_bits(1:info_blksize)', H0, 0); 
-coded_bits = [check_bits' info_bits(1:info_blksize)];
-for start = info_blksize+1:info_blksize:N 
- [check_bits, ~] = makeParityChk(info_bits(start:start+info_blksize-1)', H0, 0);
- coded_bits = [coded_bits check_bits' info_bits(start:start+info_blksize-1)];
+[check_bits(:,1), H] = makeParityChk(info_bits(:,1), H, 0);
+% coded_bits(1:2*info_blksize) = [check_bits' info_bits(1:info_blksize)];
+parfor i=2:N/info_blksize
+    [check_bits(:,i), ~] = makeParityChk(info_bits(:,i), H, 0);
 end
+coded_bits = vertcat(check_bits, info_bits);
+coded_bits = coded_bits(:)';
+info_bits = info_bits(:)';
 disp('LDPC encoding done')
 
 % Mapping
@@ -105,8 +109,8 @@ disp('LDPC decoding done')
 % Compute BER and plot
 ber = compute_ber(info_bits, bits_info, num);
 disp('End')
-%figure;
-%semilogy(ratio_min:step:ratio_max,ber, '-o');
+% figure;
+% semilogy(ratio_min:step:ratio_max,ber, '-o');
 % xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
 % ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
 % grid on;

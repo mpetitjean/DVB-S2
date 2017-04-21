@@ -1,21 +1,22 @@
-clear;
-close all;
-
+% clear;
+% close all;
+function ber = main_step1(Nbps,precision, ratio_min, step, ratio_max)
 % Simulation parameters
 f_sym 	= 2e6;
 f_samp	= 8e6;
 
-Nbps = 2;
-N = 1e5*Nbps;
+%Nbps = 2;
+%precision = 1e6;
+N = precision*Nbps;
 taps = 101;
 rolloff = 0.3;
 
-ratio_min = -5;     % Different E_b/N0 values (dB)
-step = 1;
-ratio_max = 15;
+%ratio_min = -5;     % Different E_b/N0 values (dB)
+%step = 1;
+%ratio_max = 15;
 
 % Message generation
-bits = randi(2,1,N)-1;      % random bits generation
+bits = randi([0 1],[1 N]);     % random bits generation
  
 % Mapping
 if(Nbps > 1)
@@ -78,12 +79,12 @@ end
 
 % Compute BER and plot
 ber = compute_ber(bits, bits_rx, num);
-figure;
-semilogy(ratio_min:step:ratio_max,ber, 'o');
-xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
-ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
-grid on;
-hold on;
-load('ber_th_Nbps2.mat');
-semilogy(ebno4QAM,ber4QAM, '-');
-legend('Simulation', 'Theory')
+% figure;
+% semilogy(ratio_min:step:ratio_max,ber, 'o');
+% xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);
+% ylabel('BER (log scale)', 'Interpreter', 'latex', 'FontSize', 12);
+% grid on;
+% hold on;
+% load('ber_th_Nbps2.mat');
+% semilogy(ebno4QAM,ber4QAM, '-');
+% legend('Simulation', 'Theory')

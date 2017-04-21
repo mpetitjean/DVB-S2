@@ -23,12 +23,11 @@ if N/M ~= 2
    fprintf('Code rate must be 1/2\n');
 end
 onePerRow = (N/M)*onePerCol;
-
 switch method
    % Evencol
    case {0}
       % Distribute 1s uniformly at random within column
-      for i = 1:N
+      for i = N:-1:1
          onesInCol(:, i) = randperm(M)';
       end
         
@@ -78,7 +77,7 @@ for i = 1:M
    
    n = randperm(N);
    % Add two 1s if row has no 1
-   if length(find(r == i)) == 0
+   if isempty(find(r == i, 1))
       H(i, n(1)) = 1;
       H(i, n(2)) = 1;
    % Add one 1 if row has only one 1   
