@@ -1,6 +1,6 @@
 % clear;
 % close all;
-function ber = main_step2(Nbps,precision, ratio_min, step, ratio_max, maxit)
+function ber = main_step2(Nbps,precision, ratio_min, step, ratio_max, code_rate, maxit)
 % Simulation parameters
 f_sym 	= 2e6;
 f_samp	= 8e6;
@@ -12,7 +12,7 @@ rolloff = 0.3;
 % ratio_max = 15;
 % maxit = 2;
 info_blksize = 128;
-code_rate = 1/2;
+%code_rate = 1/2;
 code_blksize = 128/code_rate;
 N = info_blksize*Nbps*code_rate*precision;
 
@@ -103,7 +103,9 @@ end
 disp('Demapping done')
 
 % LDPC decoding
-bits_info = LDPCDecode(bits_rx, H, maxit);
+parfor i=1:num
+bits_info(i,:) = LDPCDecode(bits_rx(i,:), H, maxit);
+end
 disp('LDPC decoding done')
 
 % Compute BER and plot
