@@ -1,6 +1,6 @@
 % clear;
 % close all;
-function ber = main_step2(Nbps,precision, ratio_min, step, ratio_max, maxit)
+function ber = main_step2(Nbps,precision, ratio_min, step, ratio_max, code_rate, maxit)
 % Simulation parameters
 f_sym 	= 2e6;
 f_samp	= 8e6;
@@ -12,8 +12,8 @@ rolloff = 0.3;
 % ratio_max = 15;
 % maxit = 2;
 info_blksize = 128;
-code_rate = 1/2;
-code_blksize = 128/code_rate;
+% code_rate = 1/2;
+code_blksize = info_blksize/code_rate;
 N = info_blksize*Nbps*code_rate*precision;
 
 % Message generation
@@ -25,27 +25,27 @@ disp('Bits generated')
 % Create initial parity check matrix
 
 H = makeLdpc(info_blksize,code_blksize,0,1,3);
-check_bits = zeros(info_blksize,N/info_blksize);
 info_bits = reshape(info_bits, info_blksize,N/info_blksize);
 % Encode information bits
-[check_bits(:,1), H] = makeParityChk(info_bits(:,1), H, 0);
-% coded_bits(1:2*info_blksize) = [check_bits' info_bits(1:info_blksize)];
-parfor i=2:N/info_blksize
-    [check_bits(:,i), ~] = makeParityChk(info_bits(:,i), H, 0);
-end
+[~, H] = makeParityChk(info_bits(:,1), H, 0);
+[check_bits, ~] = makeParityChk(info_bits, H, 0);
+
 coded_bits = vertcat(check_bits, info_bits);
-coded_bits = coded_bits(:)';
-info_bits = info_bits(:)';
+clear check_bits;
+coded_bits = coded_bits(:).';
+info_bits = info_bits(:).';
 disp('LDPC encoding done')
 
 % Mapping
 if(Nbps > 1)
     symb_tx = mapping(coded_bits,Nbps,'qam').';
+    mode = 'qam';
 else
     symb_tx = mapping(coded_bits,Nbps,'pam').';
+    mode = 'pam';
 end
 disp('Mapping done')
-
+clear coded_bits;
 % figure;
 % plot(symb_tx(1,:), 'x');
 % title('Tx');
@@ -54,58 +54,53 @@ disp('Mapping done')
 % Upsampling
 message_symb = upsample(symb_tx, f_samp/f_sym);
 disp('Upsample done')
-
 % Nyquist
 nyquist_impulse = nyquist(taps, rolloff, f_samp, f_sym);
 message_symb_n = conv(message_symb, nyquist_impulse);
 disp('First RRC filter done')
-
+clear message_symb;
 
 E_b = 1/(2*f_samp*N)*(trapz(abs(message_symb_n).^2));
 % Add noise
 message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 %message_noisy = message_symb_n;
 disp('Noise added')
-
+clear message_symb_n;
 % Nyquist
-num = size(message_noisy,1);
-message_noisy_n = zeros(num, length(message_noisy)+length(nyquist_impulse)-1);
+num = size(message_noisy,4);
 normalization = max(real(conv(nyquist_impulse, nyquist_impulse)));
-parfor i = 1:num
-	message_noisy_n(i,:) = conv(message_noisy(i,:), fliplr(nyquist_impulse))./normalization;
-end
-disp('Second RRC filter done')
 
+message_noisy_n = convn(message_noisy, fliplr(nyquist_impulse))./normalization;
+disp('Second RRC filter done')
+clear message_noisy nyquist_impulse;
 % Drop meaningless samples
-message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
+message_noisy_n = message_noisy_n(1,taps:end-(taps-1),1,:);
 
 % Downsampling
-symb_rx = zeros(num, length(symb_tx));
-parfor i = 1:num
-    %symb_rx(i,:) = undersampling(message_noisy_n(i,:), f_sym, f_samp);
-    symb_rx(i,:) = downsample(message_noisy_n(i,:), f_samp/f_sym);
-end
+symb_rx= downsample(message_noisy_n, f_samp/f_sym);
 disp('Downsampling done')
+clear message_noisy_n symb_tx;
 % figure;
 % plot(symb_rx(1,:), 'x');
 % title('Rx');
 % grid on;
 
 % Demapping
-bits_rx = zeros(num, length(coded_bits));
+bits_rx = zeros(1,size(symb_rx,2)*Nbps,1,size(symb_rx,4));
+if strcmp(mode,'pam')
+    symb_rx = real(symb_rx);
+end
 parfor i = 1:num
-    if(Nbps > 1)
-        bits_rx(i,:) = demapping(symb_rx(i,:).',Nbps,'qam');
-    else
-        bits_rx(i,:) = demapping(real(symb_rx(i,:)).',Nbps,'pam');
-    end
+        bits_rx(1,:,1,i) = demapping(permute(symb_rx(1,:,1,i),[2 1 3 4]),Nbps,mode);
 end
 disp('Demapping done')
-
+clear symb_rx;
 % LDPC decoding
-bits_info = LDPCDecode(bits_rx, H, maxit);
+parfor i = 1:num
+bits_info(1,:,1,i) = LDPCDecode(bits_rx(1,:,1,i), H, maxit);
+end
 disp('LDPC decoding done')
-
+clear bits_rx H;
 % Compute BER and plot
 ber = compute_ber(info_bits, bits_info, num);
 disp('End')
