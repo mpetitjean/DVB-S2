@@ -17,7 +17,7 @@ code_blksize = info_blksize/code_rate;
 N = info_blksize*Nbps*code_rate*precision;
 
 % Message generation
-info_bits = randi([0 1],[1 N]);      % random bits generation
+info_bits = logical(randi([0 1],[1 N]));      % random bits generation
 disp('Bits generated')
 
 
@@ -35,7 +35,8 @@ clear check_bits;
 coded_bits = coded_bits(:).';
 info_bits = info_bits(:).';
 disp('LDPC encoding done')
-
+H = logical(H);
+%info_bits = logical(info_bits);
 % Mapping
 if(Nbps > 1)
     symb_tx = mapping(coded_bits,Nbps,'qam').';
@@ -56,9 +57,11 @@ message_symb = upsample(symb_tx, f_samp/f_sym);
 disp('Upsample done')
 % Nyquist
 nyquist_impulse = nyquist(taps, rolloff, f_samp, f_sym);
+
 message_symb_n = conv(message_symb, nyquist_impulse);
+
 disp('First RRC filter done')
-clear message_symb;
+clear message_symb symb_tx;
 
 E_b = 1/(2*f_samp*N)*(trapz(abs(message_symb_n).^2));
 % Add noise
@@ -67,17 +70,21 @@ message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 disp('Noise added')
 clear message_symb_n;
 % Nyquist
-num = size(message_noisy,4);
+num = size(message_noisy,1);
 normalization = max(real(conv(nyquist_impulse, nyquist_impulse)));
+message_noisy_n = zeros(num,length(message_noisy)+length(nyquist_impulse)-1);
 
-message_noisy_n = convn(message_noisy, fliplr(nyquist_impulse))./normalization;
+parfor i=1:num
+message_noisy_n(i,:) = conv(message_noisy(i,:), fliplr(nyquist_impulse))./normalization;
+end
+
 disp('Second RRC filter done')
 clear message_noisy nyquist_impulse;
 % Drop meaningless samples
-message_noisy_n = message_noisy_n(1,taps:end-(taps-1),1,:);
+message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
 
 % Downsampling
-symb_rx= downsample(message_noisy_n, f_samp/f_sym);
+symb_rx= downsample(message_noisy_n.', f_samp/f_sym).';
 disp('Downsampling done')
 clear message_noisy_n symb_tx;
 % figure;
@@ -86,18 +93,21 @@ clear message_noisy_n symb_tx;
 % grid on;
 
 % Demapping
-bits_rx = zeros(1,size(symb_rx,2)*Nbps,1,size(symb_rx,4));
+bits_rx = zeros(size(symb_rx,1),size(symb_rx,2)*Nbps);
 if strcmp(mode,'pam')
     symb_rx = real(symb_rx);
 end
+symb_rx = symb_rx.';
 parfor i = 1:num
-        bits_rx(1,:,1,i) = demapping(permute(symb_rx(1,:,1,i),[2 1 3 4]),Nbps,mode);
+        bits_rx(i,:) = demapping(symb_rx(:,i),Nbps,mode);
 end
 disp('Demapping done')
 clear symb_rx;
 % LDPC decoding
+bits_info = zeros(size(info_bits));
+H = double(H);
 parfor i = 1:num
-bits_info(1,:,1,i) = LDPCDecode(bits_rx(1,:,1,i), H, maxit);
+bits_info(i,:) = LDPCDecode(bits_rx(i,:), H, maxit);
 end
 disp('LDPC decoding done')
 clear bits_rx H;

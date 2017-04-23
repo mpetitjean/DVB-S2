@@ -11,7 +11,6 @@ for startIndex = 1:sizeC:l_bits
     bloc_in = coded_bits(startIndex:startIndex+sizeC-1);
     iter = 1;
     bloc_o = tanner(bloc_in, H);
-
     % Iterate on tanner graph while not converged
     while  ~isequal(bloc_in,bloc_o) && (iter < maxit)
         bloc_in = bloc_o;

@@ -37,7 +37,7 @@ switch method
       c = reshape(tmp, N*onePerCol, 1);
       
       % Create sparse matrix H
-      H = full(sparse(r, c, 1, M, N));
+      H = sparse(r, c, 1, M, N);
       
    % Evenboth
    case {1}

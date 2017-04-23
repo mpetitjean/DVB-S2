@@ -12,10 +12,10 @@ function message_noisy = noise(message, ratio_min, step, ratio_max, f_samp, E_b)
 % - matrix of noisy messages
 
 % Various SNRs
-ratio(1,1,1,:) = ratio_min:step:ratio_max;
+ratio = ratio_min:step:ratio_max;
 % Compute N0 corresponding to the wanted SNR then add noise
 N0 = E_b./(10.^(ratio/10));
-noisePower = N0*f_samp*2;
-message_noisy = sqrt(noisePower/2).*(randn(1,length(message),1,length(ratio)) + 1i*randn(1,length(message),1,length(ratio))) + message;
+noisePower = N0.'*f_samp*2;
+message_noisy = sqrt(noisePower/2).*(randn(length(ratio),length(message)) + 1i*randn(length(ratio),length(message))) + message;
 
 % brawgn()
