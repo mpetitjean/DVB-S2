@@ -33,7 +33,7 @@ switch method
         
       % Create non zero elements (1s) index
       r = reshape(onesInCol(1:onePerCol, :), N*onePerCol, 1);
-      tmp = repmat([1:N], onePerCol, 1);
+      tmp = repmat(1:N, onePerCol, 1);
       c = reshape(tmp, N*onePerCol, 1);
       
       % Create sparse matrix H

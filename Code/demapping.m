@@ -10,25 +10,25 @@ function [bit_rx] = demapping(symb_rx,Nbps,modulation)
 
 Nsymb = size(symb_rx,1); % Number of symbols
 
-switch modulation,
+switch modulation
     
     case 'pam'
         
         % Symbol to integer
-        sigma = sqrt(sum(([0:2^Nbps-1]-(2^Nbps-1)/2).^2)/2^Nbps); 
+        sigma = sqrt(sum(((0:2^Nbps-1)-(2^Nbps-1)/2).^2)/2^Nbps);
         int_rx = sigma * symb_rx + (2^Nbps-1)/2;
 
         % Integer detection
         int_det = round(int_rx);
-        int_det(find(int_det<0)) = 0;
-        int_det(find(int_det>2^Nbps-1)) = 2^Nbps-1;
+        int_det(int_det<0) = 0;
+        int_det(int_det>2^Nbps-1) = 2^Nbps-1;
 
         % Integer to binary
         mapp_rx  = fliplr(de2bi(int_det));
 
         % Binary to gray
         bit_rx2(:,1) = mapp_rx(:,1);
-        parfor ii = 2:Nbps,
+        for ii = 2:Nbps
             bit_rx2(:,ii) = xor( mapp_rx(:,ii-1) , mapp_rx(:,ii) );
         end
 
@@ -41,20 +41,20 @@ switch modulation,
         symb_rxI = real(symb_rx);
 
         % Symbol to integer
-        sigmaI = sqrt(sum(([0:2^NbpsI-1]-(2^NbpsI-1)/2).^2)/2^NbpsI); 
+        sigmaI = sqrt(sum(((0:2^NbpsI-1)-(2^NbpsI-1)/2).^2)/2^NbpsI);
         int_rxI = sigmaI * sqrt(2) * symb_rxI + (2^NbpsI-1)/2;
 
         % Integer detection
         int_detI = round(int_rxI);
-        int_detI(find(int_detI<0)) = 0;
-        int_detI(find(int_detI>2^NbpsI-1)) = 2^NbpsI-1;
+        int_detI(int_detI<0) = 0;
+        int_detI(int_detI>2^NbpsI-1) = 2^NbpsI-1;
 
         % Integer to binary
         mapp_rxI  = fliplr(de2bi(int_detI));
 
         % Binary to gray
         bit_rx2I(:,1) = mapp_rxI(:,1);
-        parfor ii = 2:NbpsI,
+        for ii = 2:NbpsI
             bit_rx2I(:,ii) = xor( mapp_rxI(:,ii-1) , mapp_rxI(:,ii) );
         end
 
@@ -64,20 +64,20 @@ switch modulation,
         symb_rxQ = imag(symb_rx);
 
         % Symbol to integer
-        sigmaQ = sqrt(sum(([0:2^NbpsQ-1]-(2^NbpsQ-1)/2).^2)/2^NbpsQ); 
+        sigmaQ = sqrt(sum(((0:2^NbpsQ-1)-(2^NbpsQ-1)/2).^2)/2^NbpsQ); 
         int_rxQ = sigmaQ * sqrt(2) * symb_rxQ + (2^NbpsQ-1)/2;
 
         % Integer detection
         int_detQ = round(int_rxQ);
-        int_detQ(find(int_detQ<0)) = 0;
-        int_detQ(find(int_detQ>2^NbpsI-1)) = 2^NbpsQ-1;
+        int_detQ(int_detQ<0) = 0;
+        int_detQ(int_detQ>2^NbpsI-1) = 2^NbpsQ-1;
 
         % Integer to binary
         mapp_rxQ  = fliplr(de2bi(int_detQ));
 
         % Binary to gray
         bit_rx2Q(:,1) = mapp_rxQ(:,1);
-        parfor ii = 2:NbpsQ,
+        for ii = 2:NbpsQ
             bit_rx2Q(:,ii) = xor( mapp_rxQ(:,ii-1) , mapp_rxQ(:,ii) );
         end
       

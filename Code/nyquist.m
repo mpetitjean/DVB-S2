@@ -1,21 +1,14 @@
 function  result_t = nyquist(taps, beta, f_samp, f_symb)
 
 T = 1/f_symb;
-result = zeros(1, taps);
 stepo = 1 / taps * f_samp;
 highf = stepo * (taps - 1)/2;
 f = linspace(-highf, highf, taps);
 lcorner = (1 - beta) / (2 * T);
 rcorner = (1 + beta) / (2 * T);
-parfor i = 1:1:taps
-    if (abs(f(i)) < lcorner)
-        result(i) = sqrt(T);
-	elseif (abs(f(i)) > rcorner)
-		result(i) = 0;
-    else
-        result(i) = sqrt(T / 2 * (1 + cos(pi * T / beta * (abs(f(i)) - lcorner))));
-   end 
-end
+result = ones(1, taps) .* (sqrt(T / 2 * (1 + cos(pi * T / beta * (abs(f) - lcorner)))));
+result(abs(f) < lcorner) = sqrt(T);
+result(abs(f) > rcorner) = 0;
 
 %figure;
 %stem(result)
