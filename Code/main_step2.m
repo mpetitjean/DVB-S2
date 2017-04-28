@@ -14,7 +14,7 @@ rolloff = 0.3;
 info_blksize = 128;
 % code_rate = 1/2;
 code_blksize = info_blksize/code_rate;
-N = info_blksize*Nbps*code_rate*precision;
+N = info_blksize*Nbps*precision;
 
 % Message generation
 info_bits = logical(randi([0 1],[1 N]));      % random bits generation
@@ -27,8 +27,7 @@ disp('Bits generated')
 H = makeLdpc(info_blksize,code_blksize,0,1,3);
 info_bits = reshape(info_bits, info_blksize,N/info_blksize);
 % Encode information bits
-[~, H] = makeParityChk(info_bits(:,1), H, 0);
-[check_bits, ~] = makeParityChk(info_bits, H, 0);
+[check_bits, H] = makeParityChk(info_bits, H, 1);
 
 coded_bits = vertcat(check_bits, info_bits);
 clear check_bits;
@@ -63,7 +62,7 @@ message_symb_n = conv(message_symb, nyquist_impulse);
 disp('First RRC filter done')
 clear message_symb symb_tx;
 
-E_b = 1/(2*f_samp*N)*(trapz(abs(message_symb_n).^2));
+E_b = 1/(2*f_samp*N/code_rate)*(trapz(abs(message_symb_n).^2));
 % Add noise
 message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 %message_noisy = message_symb_n;
@@ -97,6 +96,7 @@ bits_rx = zeros(size(symb_rx,1),size(symb_rx,2)*Nbps);
 if strcmp(mode,'pam')
     symb_rx = real(symb_rx);
 end
+
 symb_rx = symb_rx.';
 parfor i = 1:num
         bits_rx(i,:) = demapping(symb_rx(:,i),Nbps,mode);
