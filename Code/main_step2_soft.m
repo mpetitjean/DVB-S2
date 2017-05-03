@@ -1,10 +1,10 @@
 % clear;
 % close all;
-function ber = main_step2(Nbps,precision, ratio_min, step, ratio_max, code_rate, maxit)
+function ber = main_step2_soft(precision, ratio_min, step, ratio_max, code_rate, maxit)
 % Simulation parameters
 f_sym 	= 2e6;
 f_samp	= 8e6;
-% Nbps = 6;
+Nbps = 1;
 taps = 101;
 rolloff = 0.3;
 % ratio_min = -5;     % Different E_b/N0 values (dB)
@@ -15,7 +15,6 @@ info_blksize = 128;
 % code_rate = 1/2;
 code_blksize = info_blksize/code_rate;
 N = info_blksize*Nbps*precision;
-
 
 % Message generation
 info_bits = logical(randi([0 1],[1 N]));      % random bits generation
@@ -38,13 +37,7 @@ disp('LDPC encoding done')
 H = logical(H);
 %info_bits = logical(info_bits);
 % Mapping
-if(Nbps > 1)
-    symb_tx = mapping(coded_bits,Nbps,'qam').';
-    mode = 'qam';
-else
-    symb_tx = mapping(coded_bits,Nbps,'pam').';
-    mode = 'pam';
-end
+symb_tx = mapping(coded_bits,Nbps,'pam').';
 disp('Mapping done')
 clear coded_bits;
 % figure;
@@ -93,25 +86,13 @@ clear message_noisy_n symb_tx;
 % grid on;
 
 % Demapping
-bits_rx = zeros(size(symb_rx,1),size(symb_rx,2)*Nbps);
-if strcmp(mode,'pam')
-    symb_rx = real(symb_rx);
+symb_rx = real(symb_rx);
+%H = double(H);
+bits_info = zeros(num, size(info_bits,2));
+parfor i=1:num
+bits_info(i,:) = softdemapping(symb_rx(i,:),H,maxit);
 end
-
-symb_rx = symb_rx.';
-parfor i = 1:num
-        bits_rx(i,:) = demapping(symb_rx(:,i),Nbps,mode);
-end
-disp('Demapping done')
-clear symb_rx;
-% LDPC decoding
-bits_info = zeros(size(info_bits));
-H = double(H);
-parfor i = 1:num
-bits_info(i,:) = LDPCDecode(bits_rx(i,:), H, maxit);
-end
-disp('LDPC decoding done')
-clear bits_rx H;
+disp('demmaping done')
 % Compute BER and plot
 ber = compute_ber(info_bits, bits_info, num);
 disp('End')

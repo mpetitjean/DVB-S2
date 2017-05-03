@@ -8,17 +8,17 @@ l_bits = length(coded_bits);
 bits_info = zeros(1, l_bits/ratio);
 % take bloc per bloc
 for startIndex = 1:sizeC:l_bits
-    bloc_in = coded_bits(startIndex:startIndex+sizeC-1);
-    iter = 1;
-    bloc_o = tanner(bloc_in, H);
-
+    y = coded_bits(startIndex:startIndex+sizeC-1);
+    m = y;
+    iter = 0;
+    syndrom = mod(H*m',2);
     % Iterate on tanner graph while not converged
-    while  ~isequal(bloc_in,bloc_o) && (iter < maxit)
-        bloc_in = bloc_o;
+    while  any(syndrom) && (iter < maxit)
         iter = iter + 1;
-        bloc_o = tanner(bloc_in, H);
+        m = tanner(y, syndrom, m, H);
+        syndrom = mod(H*m',2);
     end
     % Drop parity bits
     bits_info(1+(startIndex-1)/ratio:(startIndex-1)/ratio+sizeF) = ...
-        bloc_o(end-sizeF+1:end);
+        m(end-sizeF+1:end);
 end
