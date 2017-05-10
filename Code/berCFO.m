@@ -1,7 +1,8 @@
-function ber = berCFO(Nbps,precision, ratio_min, step, ratio_max, ppm, phi)
+function ber = berCFO(Nbps,precision, ratio_min, step, ratio_max, df, phi)
 % Simulation parameters
-f_sym 	= 10e6;
-f_samp	= 2e9;
+f_sym 	= 1e6;
+f_samp	= 10e6;
+fc = 2e9;
 
 N = precision*Nbps;
 taps = 101;
@@ -33,9 +34,9 @@ message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 % Add CFO
 num = size(message_noisy,1);
 parfor i = 1:num
-    message_noisy(i,:) = cfo(message_noisy(i,:), ppm, phi, f_samp);
+    message_noisy(i,:) = cfo(message_noisy(i,:), df, phi, f_samp);
 end
-
+    
 % Nyquist
 message_noisy_n = zeros(num, length(message_noisy)+length(nyquist_impulse)-1);
 normalization = max(real(conv(nyquist_impulse, nyquist_impulse)));
@@ -45,10 +46,12 @@ end
 
 % Drop meaningless samples
 message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
+% test_in = downsample(message_noisy_n(end,:), f_samp/f_sym);
+% scatter(real(test_in),imag(test_in))
 
 %Manual perfect cfo correction after filtering
 parfor i= 1:num
-    message_noisy_n(i,:) = cfo(message_noisy_n(i,:), -ppm, phi, f_samp);
+    message_noisy_n(i,:) = cfo(message_noisy_n(i,:), -df, -phi, f_samp).*exp(-1j*(taps-1)/2/f_samp*2*pi*df);
 end
 
 % Downsampling
@@ -57,6 +60,8 @@ parfor i = 1:num
     symb_rx(i,:) = downsample(message_noisy_n(i,:), f_samp/f_sym);
 end
 
+% figure;
+% scatter(real(symb_rx(end,:)),imag(symb_rx(end,:)))
 % Demapping
 bits_rx = zeros(num, length(bits));
 parfor i = 1:num
