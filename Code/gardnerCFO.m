@@ -1,6 +1,6 @@
 % clear;
 % close all;
-function [ber, epsilon] = samplingshift(f_sym, f_samp, Nbps,precision, ratio_min, step, ratio_max,shift, k)
+function [ber, epsilon] = gardnerCFO(f_sym, f_samp, Nbps,precision, ratio_min, step, ratio_max,shift, k, df, phi)
 % Simulation parameters
 f_gardner = f_samp/2;
 %Nbps = 2;
@@ -50,8 +50,13 @@ message_noisy = noise(message_symb_n, ratio_min, step, ratio_max, f_samp, E_b);
 disp('Noise added')
 clear message_symb_n
 
-% Nyquist
+% Add CFO
 num = size(message_noisy,1);
+parfor i = 1:num
+    message_noisy(i,:) = cfo(message_noisy(i,:), df, phi, f_samp);
+end
+
+% Nyquist
 message_noisy_n = zeros(num, length(message_noisy)+length(nyquist_impulse)-1);
 normalization = max(real(conv(nyquist_impulse, nyquist_impulse)));
 
@@ -63,6 +68,11 @@ clear message_noisy normalization nyquist_impulse
 
 % Drop meaningless samples
 message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
+
+%Manual perfect cfo correction after filtering
+parfor i= 1:num
+    message_noisy_n(i,:) = cfo(message_noisy_n(i,:), -df, -phi, f_samp).*exp(-1j*(taps-1)/2/f_samp*2*pi*df);
+end
 
 % Downsampling
 %symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_sym).';
