@@ -1,6 +1,6 @@
 % clear;
 % close all;
-function [ber, epsilon] = main_step4(f_sym, f_samp, Nbps,precision, ratio_min, step, ratio_max,shift, k, df, phi)
+function [shiftoa, dftoa] = main_step4(f_sym, f_samp, Nbps,precision, ratio_min, step, ratio_max,shift, k, df, phi,Nw,Kw)
 % Simulation parameters
 f_gardner = f_samp/2;
 %Nbps = 2;
@@ -34,6 +34,7 @@ disp('Mapping done')
 
 % Upsampling
 message_symb = upsample(symb_tx, f_samp/f_sym);
+Pilot = symb_tx(1:Nw/Nbps);
 disp('Upsample done')
 clear symb_tx
 
@@ -69,14 +70,11 @@ clear message_noisy normalization nyquist_impulse
 % Drop meaningless samples
 message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
 
-%Manual perfect cfo correction after filtering
-parfor i= 1:num
-    message_noisy_n(i,:) = cfo(message_noisy_n(i,:), -df, -phi, f_samp).*exp(-1j*(taps-1)/2/f_samp*2*pi*df);
-end
-
 % Downsampling
 %symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_sym).';
 symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_gardner).';
+
+% Gardner
 corrected = zeros(num,precision);
 epsilon = zeros(num,precision);
 for ii=1:num
@@ -84,27 +82,38 @@ for ii=1:num
 end
 disp('Downsampling done')
 clear message_noisy_n
-symb_rx = corrected;
-% figure;
-% plot(symb_rx(1,:), 'x');
-% title('Rx');
-% grid on;
-
-% Demapping
-bits_rx = zeros(num,length(bits));
-if strcmp(mode,'pam')
-    symb_rx = real(symb_rx);
+shiftoa = zeros(1,num);
+dftoa = shiftoa;
+for ii = 1:num
+[shiftoa(ii), dftoa(ii)] = frame(corrected(ii,:), Pilot, Nw/Nbps, Kw, f_sym);
 end
-
-symb_rx = symb_rx.';
-parfor i = 1:num
-        bits_rx(i,:) = demapping(symb_rx(:,i),Nbps,mode);
-end
-disp('Demapping done')
-clear symb_rx
+% for ii=1:num
+%     fd{ii} = corrected(ii, shiftoa(ii):end);
+% end
+%corrected = corrected(:,
+%Manual perfect cfo correction after filtering
+% parfor i= 1:num
+%     dd{i} = cfo(fdi{i}, dftoa(i), -phi, f_samp).*exp(-1j*(taps-1)/2/f_samp*2*pi*df);
+% end
+% % figure;
+% % plot(symb_rx(1,:), 'x');
+% % title('Rx');
+% % grid on;
+% 
+% % Demapping
+% %bits_rx = zeros(num,length(bits)-Nw);
+% if strcmp(mode,'pam')
+%     dd = cellfun(@real,dd,'un',0);
+% end
+% dd = cellfun(@transpose,dd,'un',0);
+% parfor i = 1:num
+%         bits_rx{i} = demapping(dd(:,i),Nbps,mode);
+% end
+% disp('Demapping done')
+% clear symb_rx corrected
 
 % Compute BER and plot
-ber = compute_ber(bits, bits_rx, num);
+%ber = compute_ber(bits, bits_rx, num);
 % figure;
 % semilogy(ratio_min:step:ratio_max,ber, 'o');
 % xlabel('Ratio $E_b/N_0$', 'Interpreter', 'latex', 'FontSize', 12);

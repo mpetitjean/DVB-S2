@@ -7,6 +7,14 @@ code_rate = 1/2;
 step = 1;
 fm 	= 2e6;
 fs	= 200e6;
+FC = 2e9;
+df = [0 10 50].*(1e-6*FC);
+phi = 0;
+f_sym 	= 1e6;
+f_samp	= 16e6;
+shift = round(0.45*f_samp/f_sym);
+k = 0.1;
+Nexp = 25;
 a = ratio_min:step:ratio_max;
 %% 
 for maxit=[1 3 5]
@@ -29,11 +37,7 @@ legend(leg);
 %% 
 figure
 hold on
-f_sym 	= 1e6;
-f_samp	= 16e6;
-shift = round(0.45*f_samp/f_sym);
 k = [0.02 0.05 0.1];
-Nexp = 25;
 precision = 1e3;
 means = zeros(length(k), precision);
 stdv = zeros(length(k), precision);
@@ -57,14 +61,6 @@ end
 
 figure
 hold on
-FC = 2e9;
-df = [0 10 50].*(1e-6*FC);
-phi = 0;
-f_sym 	= 1e6;
-f_samp	= 16e6;
-shift = round(0.45*f_samp/f_sym);
-k = 0.1;
-Nexp = 25;
 precision = 1e3;
 means = zeros(length(df), precision);
 stdv = zeros(length(df), precision);
@@ -83,3 +79,29 @@ for ii= 1:length(df)
     plot(1:step:length(means),means(ii,1:step:end) + stdv(ii,1:step:end),':','Color', c)
     plot(1:step:length(means),means(ii,1:step:end) - stdv(ii,1:step:end),':','Color',c)
 end
+
+%%
+
+figure
+hold on
+precision = 1e3;
+means = zeros(length(df), precision);
+stdv = zeros(length(df), precision);
+step = 20;
+Nw = 40;
+Kw = 8;
+% for ii= 1:length(df)
+%     for jj = 1:Nexp
+        epsilon = main_step4(f_sym, f_samp, Nbps,precision, 5, 1, 25,shift, k, df(1), phi,Nw,Kw);
+%         samplingerror = (shift - epsilon*f_samp/f_sym)/f_samp;
+%         means(ii,:) = means(ii,:) + samplingerror;
+%         stdv(ii,:) = stdv(ii,:) + samplingerror.^2;
+%     end
+%     means(ii,:) = means(ii,:)/Nexp;
+%     stdv(ii,:) = sqrt(stdv(ii,:)/Nexp - means(ii,:).^2);
+%     current = plot(1:step:length(means),means(ii,1:step:end));
+%     c = get(current, 'color');
+%     plot(1:step:length(means),means(ii,1:step:end) + stdv(ii,1:step:end),':','Color', c)
+%     plot(1:step:length(means),means(ii,1:step:end) - stdv(ii,1:step:end),':','Color',c)
+% end
+
