@@ -3,7 +3,7 @@
 function ber = samplingshift(Nbps,precision, ratio_min, step, ratio_max,shift)
 % Simulation parameters
 f_sym 	= 2e6;
-f_samp	= 64e6;
+f_samp	= 200e6;
 
 %Nbps = 2;
 %precision = 1e6;
@@ -67,10 +67,14 @@ clear message_noisy normalization nyquist_impulse
 message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
 
 % Downsampling
-symb_rx= downsample(message_noisy_n.', f_samp/f_sym,shift).';
+symb_rx= downsample(message_noisy_n.', f_samp/f_sym/2,shift).';
+corrected = zeros(num,length(symb_rx)/2);
+parfor ii=1:num
+    corrected(ii,:) = gardner(symb_rx(ii,:),2);
+end
 disp('Downsampling done')
 clear message_noisy_n
-
+symb_rx = corrected;
 % figure;
 % plot(symb_rx(1,:), 'x');
 % title('Rx');
