@@ -85,23 +85,23 @@ end
 figure
 hold on
 precision = 1e3;
-means = zeros(length(df), precision);
-stdv = zeros(length(df), precision);
-step = 20;
-Nw = 40;
+df = 0;
+shift = 0;
+Nw = [10 20 40];
 Kw = 8;
-% for ii= 1:length(df)
-%     for jj = 1:Nexp
-        epsilon = main_step4(f_sym, f_samp, Nbps,precision, 5, 1, 25,shift, k, df(1), phi,Nw,Kw);
-%         samplingerror = (shift - epsilon*f_samp/f_sym)/f_samp;
-%         means(ii,:) = means(ii,:) + samplingerror;
-%         stdv(ii,:) = stdv(ii,:) + samplingerror.^2;
-%     end
-%     means(ii,:) = means(ii,:)/Nexp;
-%     stdv(ii,:) = sqrt(stdv(ii,:)/Nexp - means(ii,:).^2);
-%     current = plot(1:step:length(means),means(ii,1:step:end));
-%     c = get(current, 'color');
-%     plot(1:step:length(means),means(ii,1:step:end) + stdv(ii,1:step:end),':','Color', c)
-%     plot(1:step:length(means),means(ii,1:step:end) - stdv(ii,1:step:end),':','Color',c)
-% end
+Nexp = 25;
+FC = 2e9;
+shiftoa = zeros(Nexp,length(0:16));
+dftoa = zeros(Nexp,length(0:16));
+for ii = 1:length(Nw)
+    for jj = 1:Nexp
+        [shiftoa(jj,:), dftoa(jj,:)] = main_step4(f_sym, f_samp, Nbps,precision, 0, 1, 16, shift, k, df, phi,Nw(ii),Kw);
+    end
+    stdevt = std(shiftoa-shift);
+    stdevf = std((dftoa-df(1))*1e6/FC);
+    plot(0:16,stdevf);
+    leg{ii} = ['Nw = ' num2str(Nw(ii))];
+end
+legend(leg);
+
 
