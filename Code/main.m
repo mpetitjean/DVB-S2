@@ -17,6 +17,7 @@ k = 0.1;
 Nexp = 25;
 a = ratio_min:step:ratio_max;
 %% 
+if 0
 for maxit=[1 3 5]
     ber = (main_step2(Nbps,precision, ratio_min, step, ratio_max, code_rate, maxit) + main_step2(Nbps,precision, ratio_min, step, ratio_max, code_rate, maxit))./2;
     csvwrite(['ber_Nbps' num2str(Nbps) '(LDPC_it' num2str(maxit) ').csv'],[a.' ber.']);
@@ -81,13 +82,13 @@ for ii= 1:length(df)
 end
 
 %%
-
+end
 figure
 hold on
 precision = 1e3;
 df = 0;
 shift = 0;
-Nw = [10 20 40];
+Nw = [12 20 40];
 Kw = 8;
 Nexp = 25;
 FC = 2e9;
@@ -101,6 +102,7 @@ for ii = 1:length(Nw)
     stdevf = std((dftoa-df(1))*1e6/FC);
     plot(0:16,stdevf);
     leg{ii} = ['Nw = ' num2str(Nw(ii))];
+    disp(num2str(Nw(ii)));
 end
 legend(leg);
 

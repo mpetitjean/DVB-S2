@@ -20,10 +20,10 @@ disp('Bits generated')
 % Mapping
 if(Nbps > 1)
     symb_tx = mapping(bits,Nbps,'qam').';
-    mode = 'qam';
+%     mode = 'qam';
 else
     symb_tx = mapping(bits,Nbps,'pam').';
-    mode = 'qam';
+%     mode = 'qam';
 end
 disp('Mapping done')
 % 
@@ -85,7 +85,7 @@ clear message_noisy_n
 shiftoa = zeros(1,num);
 dftoa = shiftoa;
 for ii = 1:num
-[shiftoa(ii), dftoa(ii)] = frame(corrected(ii,:), Pilot, Nw/Nbps, Kw, f_sym);
+[shiftoa(ii), dftoa(ii)] = frameAcq(Pilot,corrected(ii,:).', Nw/Nbps, Kw, f_sym);
 end
 % for ii=1:num
 %     fd{ii} = corrected(ii, shiftoa(ii):end);
