@@ -34,7 +34,7 @@ disp('Mapping done')
 
 % Upsampling
 message_symb = upsample(symb_tx, f_samp/f_sym);
-Pilot = symb_tx(1:Nw/Nbps);
+Pilot = symb_tx(100:100+Nw/Nbps);
 disp('Upsample done')
 clear symb_tx
 
@@ -53,16 +53,16 @@ clear message_symb_n
 
 % Add CFO
 num = size(message_noisy,1);
-parfor i = 1:num
-    message_noisy(i,:) = cfo(message_noisy(i,:), df, phi, f_samp);
+parfor ii = 1:num
+    message_noisy(ii,:) = cfo(message_noisy(ii,:), df, phi, f_samp);
 end
 
 % Nyquist
 message_noisy_n = zeros(num, length(message_noisy)+length(nyquist_impulse)-1);
 normalization = max(real(conv(nyquist_impulse, nyquist_impulse)));
 
-parfor i = 1:num
-	message_noisy_n(i,:) = conv(message_noisy(i,:), fliplr(nyquist_impulse))./normalization;
+parfor ii = 1:num
+	message_noisy_n(ii,:) = conv(message_noisy(ii,:), fliplr(nyquist_impulse))./normalization;
 end
 disp('Second RRC filter done')
 clear message_noisy normalization nyquist_impulse
@@ -71,21 +71,22 @@ clear message_noisy normalization nyquist_impulse
 message_noisy_n = message_noisy_n(:,taps:end-(taps-1));
 
 % Downsampling
-%symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_sym).';
-symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_gardner).';
+symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_sym).';
+% symb_rx= downsample(message_noisy_n(:,1+shift:end).', f_samp/f_gardner).';
 
 % Gardner
-corrected = zeros(num,precision);
-epsilon = zeros(num,precision);
-for ii=1:num
-    [corrected(ii,:), epsilon(ii,:)] = gardner(symb_rx(ii,:),k,f_gardner/f_sym);
-end
+% corrected = zeros(num,precision);
+% epsilon = zeros(num,precision);
+% for ii=1:num
+%     [corrected(ii,:), epsilon(ii,:)] = gardner(symb_rx(ii,:),k,f_gardner/f_sym);
+% end
+corrected= symb_rx;
 disp('Downsampling done')
 clear message_noisy_n
 shiftoa = zeros(1,num);
 dftoa = shiftoa;
-for ii = 1:num
-[shiftoa(ii), dftoa(ii)] = frameAcq(Pilot,corrected(ii,:).', Nw/Nbps, Kw, f_sym);
+parfor ii = 1:num
+[shiftoa(ii), dftoa(ii)] = frame(corrected(ii,:),Pilot, Nw/Nbps, Kw, f_sym);
 end
 % for ii=1:num
 %     fd{ii} = corrected(ii, shiftoa(ii):end);

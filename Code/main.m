@@ -88,22 +88,26 @@ hold on
 precision = 1e3;
 df = 0;
 shift = 0;
-Nw = [12 20 40];
-Kw = 8;
-Nexp = 25;
+Nw = 40;
+Kw = [1 8 16];
+Nexp = 50;
 FC = 2e9;
-shiftoa = zeros(Nexp,length(0:16));
-dftoa = zeros(Nexp,length(0:16));
-for ii = 1:length(Nw)
+shiftoa = zeros(Nexp,length(0:2:16));
+dftoa = zeros(Nexp,length(0:2:16));
+stdevt = zeros(length(Kw),length(0:2:16));
+stdevf = stdevt;
+
+for ii = 1:length(Kw)
     for jj = 1:Nexp
-        [shiftoa(jj,:), dftoa(jj,:)] = main_step4(f_sym, f_samp, Nbps,precision, 0, 1, 16, shift, k, df, phi,Nw(ii),Kw);
+        [shiftoa(jj,:), dftoa(jj,:)] = main_step4(f_sym, f_samp, Nbps,precision, 0, 2, 16, shift, k, df, phi,Nw,Kw(ii));
     end
-    stdevt = std(shiftoa-shift);
-    stdevf = std((dftoa-df(1))*1e6/FC);
-    plot(0:16,stdevf);
-    leg{ii} = ['Nw = ' num2str(Nw(ii))];
-    disp(num2str(Nw(ii)));
+    stdevt(ii,:) = std(shiftoa-shift);
+    stdevf(ii,:) = std((dftoa-df(1))*1e6/FC);
+    plot(0:2:16,stdevt(ii,:));
+    leg{ii} = ['Kw = ' num2str(Kw(ii))];
+    disp(num2str(Kw(ii)));
 end
 legend(leg);
+ylim([0 200]);
 
 
