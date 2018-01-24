@@ -1,0 +1,36 @@
+\documentclass[12pt,english]{article}
+\usepackage{preamble}
+\newcommand{\macrotikz}{\documentclass[tikz]{standalone}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{arrows.meta}
+\usepgfplotslibrary{patchplots}
+\usepackage{grffile}
+}
+
+\begin{document}
+\cleardoublepage
+\pagenumbering{gobble}
+\input{titlepage}
+
+\tableofcontents
+
+\newpage
+\cleardoublepage
+\pagenumbering{arabic}
+
+\section{Introduction}
+\input{sections/intro.tex}
+
+\section{Optimal communication chain over the ideal channel}\label{sec:step1}
+\input{sections/step1.tex}
+
+\section{Low-density parity check code}
+\input{sections/step2.tex}
+
+\section{Time and frequency synchronisation}
+\input{sections/step3.tex}
+
+\end{document}

@@ -1,0 +1,44 @@
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{babel}
+\RequirePackage{lmodern}
+\RequirePackage[T1]{fontenc}
+\addto\extrasbritish{\sisetup{locale = UK,detect-all}}
+\RequirePackage{courier}
+\RequirePackage{graphicx}
+\RequirePackage[autostyle]{csquotes}
+
+%%% Mise en page %%%
+\RequirePackage{mathtools}
+\RequirePackage{amssymb}
+\RequirePackage{bbm}
+\RequirePackage{amsthm}
+\RequirePackage{caption}     % Permet d'ajouter des légendes en images sans les mettre en float + dans la marge + ref vers le haut de l'envirronement
+\RequirePackage{wrapfig}
+\RequirePackage{fullpage}
+\RequirePackage{float}      %permet de mettre du texte entre les figures grace a [H]. Génial!
+\RequirePackage{adjustbox}  % Empêche les box de sortir de la page
+\RequirePackage{standalone}
+\RequirePackage{float}
+
+%%% Math %%%
+\RequirePackage{siunitx}
+
+%% Reference
+\RequirePackage[hidelinks]{hyperref}
+
+%% Tikz
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{arrows.meta}
+\usepgfplotslibrary{patchplots}
+\usepgfplotslibrary{units}
+\RequirePackage{grffile}
+\RequirePackage{tikzscale}
+
+\pgfplotsset{
+  unit code/.code 2 args=
+    \begingroup
+    \protected@edef\x{\endgroup\si{#2}}\x
+} 

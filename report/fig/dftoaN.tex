@@ -1,0 +1,66 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor3}{rgb}{0.92900,0.69400,0.12500}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=.85\textwidth,
+height=0.35\textheight,
+at={(0.758in,0.481in)},
+scale only axis,
+xmin=0,
+xmax=16,
+xlabel={Ratio $\frac{E_b}{N_0}$},
+x unit=\decibel,
+ymin=0,
+ylabel=Standard deviation of the CFO error (ppm),
+ymax=10,
+ymajorgrids,
+xmajorgrids,
+axis background/.style={fill=white},
+legend style={legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot +[mark=*]
+  table[row sep=crcr]{%
+8.03835966121347	11\\
+10	7.1814411841626\\
+12	4.61804474385136\\
+14	2.31327263323591\\
+16	0.552355005714659\\
+};
+\addlegendentry{$N = 10, \ K=8$}
+
+\addplot +[mark=*]
+  table[row sep=crcr]{%
+0	7.74087732951312\\
+2	4.82331710955301\\
+4	0.947492126408044\\
+6	0.665083530201919\\
+10	0.471716905727082\\
+12	0.372992055752359\\
+14	0.292903782671292\\
+16	0.219268851339507\\
+};
+\addlegendentry{$N = 20, \ K=8$}
+
+\addplot +[mark=*]
+  table[row sep=crcr]{%
+0	0.965746555881051\\
+2	0.586853023278444\\
+4	0.54085057277549\\
+6	0.311887155783548\\
+8	0.257556120126331\\
+12	0.166041049142635\\
+16	0.0952304865438975\\
+};
+\addlegendentry{$N = 40, \ K=8$}
+
+\end{axis}
+\end{tikzpicture}%

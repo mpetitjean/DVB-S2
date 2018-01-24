@@ -1,0 +1,35 @@
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=.85\textwidth,
+height=0.35\textheight,
+at={(1.733in,1.051in)},
+scale only axis,
+xmin = 0,
+xmax = 16,
+ymin = 0,
+ymax = 10,
+xlabel style={font=\color{white!15!black}},
+xlabel={Ratio $\frac{E_b}{N_0}$},
+x unit=\decibel,
+ylabel style={font=\color{white!15!black}},
+ylabel=Standard deviation of the CFO error (ppm),
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+]
+\addplot +[mark=*]
+    table [col sep=comma]{stdevf_K1.csv};
+\addlegendentry{$N=20$, $K=1$};
+
+\addplot +[mark=*]
+    table [col sep=comma]{stdevf_K8.csv};
+\addlegendentry{$N=20$, $K=8$};
+
+\addplot +[mark=*]
+    table [col sep=comma]{stdevf_K16.csv};
+\addlegendentry{$N=20$, $K=16$};
+
+
+\end{axis}
+\end{tikzpicture}%

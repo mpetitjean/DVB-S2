@@ -1,0 +1,183 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor3}{rgb}{0.92900,0.69400,0.12500}%
+\definecolor{mycolor4}{rgb}{0.49400,0.18400,0.55600}%
+\definecolor{mycolor5}{rgb}{0.46600,0.67400,0.18800}%
+\definecolor{mycolor6}{rgb}{0.30100,0.74500,0.93300}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=.89\textwidth,
+height=0.35\textheight,
+at={(1.782in,0.786in)},
+scale only axis,
+xmin=-5,
+xmax=15,
+ymode=log,
+ymin=1e-04,
+xlabel style={font=\color{white!15!black}},
+xlabel={Ratio $\frac{E_b}{N_0}$},
+x unit=\decibel,
+ylabel style={font=\color{white!15!black}},
+ylabel={BER},
+ymax=1,
+yminorticks=true,
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+yminorgrids,
+legend style={legend cell align=left, align=left, draw=white!15!black, legend pos=south west}
+]
+\addplot [color=mycolor1,mark=*,mark options={solid}]
+  table[row sep=crcr]{%
+-5	0.261468749999999\\
+-3	0.21389375\\
+-1	0.1629875\\
+1	0.11894375\\
+2	0.0970437499999999\\
+3	0.0776312499999998\\
+4	0.0586687499999999\\
+5	0.0418625\\
+6	0.02824375\\
+7	0.01713125\\
+8	0.00935625000000001\\
+9	0.00466875\\
+10	0.0017625\\
+11	0.000506250000000001\\
+12	0.00014375\\
+13	1.875e-05\\
+14	1.875e-05\\
+};
+\addlegendentry{ppm = 0}
+
+\addplot [color=mycolor2,mark=*,mark options={solid}]
+  table[row sep=crcr]{%
+-5	0.26346875\\
+-4	0.23751875\\
+-2	0.18863125\\
+-1	0.16504375\\
+0	0.14305\\
+1	0.1216875\\
+2	0.0996187500000002\\
+3	0.0793437499999999\\
+4	0.0604874999999999\\
+5	0.043725\\
+6	0.0293875\\
+7	0.01764375\\
+8	0.00973749999999999\\
+9	0.00443125\\
+10	0.00204375\\
+11	0.000593749999999999\\
+12	0.00016875\\
+13	5.625e-05\\
+};
+\addlegendentry{ppm = 25}
+
+\addplot [color=mycolor3,mark=*,mark options={solid}]
+  table[row sep=crcr]{%
+-5	0.26831875\\
+-3	0.2201\\
+-2	0.1950625\\
+-1	0.17116875\\
+0	0.1485625\\
+1	0.12729375\\
+2	0.1059875\\
+3	0.0849374999999999\\
+4	0.0671000000000001\\
+5	0.04976875\\
+6	0.03441875\\
+7	0.02271875\\
+8	0.01360625\\
+9	0.00798749999999999\\
+10	0.00395\\
+11	0.0018125\\
+12	0.00065625\\
+13	0.00021875\\
+14	8.125e-05\\
+15	1.875e-05\\
+};
+\addlegendentry{ppm = 50}
+
+\addplot [color=mycolor4,mark=*,mark options={solid}]
+  table[row sep=crcr]{%
+-5	0.276875\\
+-3	0.23073125\\
+-1	0.181675\\
+0	0.16004375\\
+1	0.13814375\\
+2	0.1181875\\
+3	0.099275\\
+4	0.0814625\\
+5	0.0649937500000001\\
+6	0.0498499999999999\\
+7	0.036625\\
+8   0.027\\
+9	0.019225\\
+10	0.0126375\\
+11	0.00865624999999999\\
+12	0.00530625\\
+13	0.0036625\\
+14	0.0024375\\
+15	0.0013875\\
+};
+\addlegendentry{ppm = 75}
+
+\addplot [color=mycolor5,mark=*,mark options={solid}]
+  table[row sep=crcr]{%
+-5	0.289106249999999\\
+-4	0.26591875\\
+-2	0.22105625\\
+0	0.1766375\\
+1	0.1584\\
+2	0.13979375\\
+3	0.12241875\\
+4	0.1065375\\
+5	0.0915187500000001\\
+6	0.0792499999999999\\
+7	0.0678125\\
+8	0.0570875\\
+9	0.0483750000000001\\
+10	0.0416312500000001\\
+11	0.03561875\\
+12	0.03100625\\
+13	0.027875\\
+14	0.02466875\\
+15	0.02241875\\
+};
+\addlegendentry{ppm = 100}
+
+\addplot [color=mycolor6]
+  table[row sep=crcr]{%
+-5	0.261959955523416\\
+-4	0.236709728052589\\
+-3	0.211652335370619\\
+-2	0.187246252414403\\
+-1	0.163696268976703\\
+0	0.140981635066842\\
+1	0.118997407465924\\
+2	0.097741853737487\\
+3	0.0774530602925489\\
+4	0.0586237372834044\\
+5	0.0418927600464623\\
+6	0.0278713278451503\\
+7	0.0169667343687604\\
+8	0.00924721374147441\\
+9	0.0043903360873521\\
+10	0.00175415061789273\\
+11	0.000564706106481742\\
+12	0.000138658688812619\\
+13	2.42337854663158e-05\\
+14	2.76320800168778e-06\\
+15	1.84185551109448e-07\\
+};
+\addlegendentry{Ideal}
+
+\end{axis}
+\end{tikzpicture}%

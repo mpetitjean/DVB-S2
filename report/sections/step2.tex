@@ -1,0 +1,86 @@
+\subsection{Simulation}
+
+The channel encoder that was skipped in section \ref{sec:step1} is now implemented as a low-density parity check code (LDPC) encoder. Soft and hard decoding have been implemented with a code rate of 1/2 and their performance is compared next.
+
+The channel coding adds structured redundancy  to the information sent by the transmitter to be able to detect and correct errors at the receiver side. The LDPC code has the property that the check matrix is sparse, allowing a lower complexity of the implementation.
+
+\subsubsection{Hard decoding}
+\iffalse
+\begin{figure}[H]
+\centering
+    \includegraphics{fig/HardLDPC.tex}
+     \caption{Hard LDPC}
+    \label{fig:HardLDPC}
+\end{figure}
+\fi
+
+The hard decoding is based on the implementation of a Tanner graph. The influence of the maximal number of iterations on the BER curves is shown in Figure \ref{fig:HardLDPCbis} for a 16-QAM modulation. The conclusions can be generalized to any modulation.
+
+\begin{figure}[H]
+\centering
+    \includegraphics[width=\textwidth]{fig/HardLDPCbis.tex}
+     \caption{Effect on the BER curves of Hard LDPC decoding for a 16-QAM modulation}
+    \label{fig:HardLDPCbis}
+\end{figure}
+
+For the hard decoding, the performance is worsened at low SNR. Indeed, a noise which is too important causes the code to add errors when it is trying to correct them. Increasing the maximal number of iterations allows a slight improvement in performance.
+
+\subsubsection{Soft decoding}
+
+In practice, hard decoding is never used as the soft decoding allows for much better performance. Instead on basing the decision on the received bits, it computes probablities based on the received symbols. The results of the simulations for a 2-PAM is shown in Figure \ref{fig:SoftLDPC}.
+
+\begin{figure}[H]
+\centering
+    \includegraphics{fig/SoftLDPC.tex}
+     \caption{Effect on the BER curves of Hard LDPC decoding for a 16-QAM modulation}
+    \label{fig:SoftLDPC}
+\end{figure}
+
+The theoretical curve for the ideal communication chain as well as the curve for hard decoding are shown as references. The improvement is significant with soft decoding.
+
+\subsection{Questions}
+
+\subsubsection{Questions regarding the simulation}
+
+\paragraph{When building the new BER curves, do you consider the uncoded or coded bit energy on	the x-axis?} \mbox{}
+
+The coded bit energy is considered here.
+
+\paragraph{How do you limit the number of decoder iterations?} \mbox{}
+
+For the hard decoding, the iterations stop either when the maximum number of iterations is reached or when the syndrome is zero.
+
+For the soft decoding,  stop either when the maximum number of iterations is reached or when there is no more detected errors.
+
+\paragraph{Why is it much simpler to implement the soft decoder for BPSK or QPSK than for 16-QAM or 64-QAM?} \mbox{}
+
+In the case of the 16-QAM or 64-QAM, the euclidean distance should be computed when decoding. This is not the case for BPSK and QPSK, where the decision can be made only by looking at the real and imaginary part of the received symbols.
+
+\subsubsection{Questions regarding the communication system}
+
+\paragraph{Demonstrate analytically that the parity check matrix is easily deduced from the generator matrix when the code is systematic.} \mbox{}
+
+A code is systematic when the mapping is such that part of the code vector coincides with the message vector. In that case, the generator matrix has the form $\underline{\underline{G}} = \left[\underline{\underline{P}} | \underline{\underline{I}}\right]$, with $\underline{\underline{P}}$ the parity array and $\underline{\underline{I}}$ the identity matrix of the corresponding size.
+The parity check matrix should be created so that its rows are orthogonal to the rows of the generator matrix:
+
+\begin{equation*}
+ \underline{\underline{G}} \cdot \underline{\underline{H}}^T = \underline{\underline{0}}
+\end{equation*}
+
+The solution to this equation is given by $\underline{\underline{H}} = \left[\underline{\underline{I}} | \underline{\underline{P}}^T\right]$. Indeed:
+
+\begin{equation*}
+	\underline{\underline{G}} \cdot \underline{\underline{H}}^T = \left[\underline{\underline{P}} | \underline{\underline{I}}\right] \cdot \left[\underline{\underline{I}} | \underline{\underline{P}}^T\right]^T =  \underline{\underline{P}} \oplus  \underline{\underline{P}} =0
+\end{equation*}
+
+\paragraph{Explain why we can apply linear combinations on the rows of the parity check matrix to produce an equivalent systematic code.} \mbox{}
+
+The rows of the parity check matrix are the basis vectors of a subspace which is perpendicular to the subspace spanned by the generator matrix. A linear combination of these basis vectors will still be a basis for the same subspace and the resulting code will be equivalent.
+
+\paragraph{Why is it especially important to have a sparse parity check matrix (even more important	than having a sparse generator matrix)?} \mbox{}
+
+A sparse parity check matrix allows to significantly reduce the complexity of the decoder. Indeed, element $H_{ij}$ being equal to 1 results in a logical connection in the Tanner graph between the check-node $c_i$ and the variable-node $v_j$. Hence, reducing the number of 1's in $\underline{\underline{H}}$ reduces the number of exchanged messages and the number of computations.
+
+\paragraph{Explain why the check nodes only use the information received from the other variable nodes when they reply to a variable node.} \mbox{}
+
+The information exchanged between the check and variable nodes has to be statistically independent for hard and soft decoding. This means that only the information which is not related to the current node is used to compute the answer.

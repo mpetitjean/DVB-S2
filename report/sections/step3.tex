@@ -1,0 +1,182 @@
+\subsection{Simulation}
+In this section, the synchronisation errors caused by the hardware, the carrier phase and frequency shift are simulated, then algorithms allowing to reduce them are introduced.
+
+\subsubsection{Synchronisation errors}
+
+On \autoref{fig:CFOphi} is shown how the CFO affects the constellation. The linearly increasing phase shift caused by the CFO causes a rotation of the symbols. This effect is first manually corrected to study the impact of ISI only.
+
+\begin{figure}[H]
+    \centering
+    \input{fig/CFOphi}
+    \caption{Illustration of the effect of the CFO phase shift on a 4-QAM constellation for $\frac{E_b}{N_0} = 15 \si{\deci\bel}$}
+    \label{fig:CFOphi}
+\end{figure}
+
+The effect of the CFO ISI on the BER curves is shown in \autoref{fig:CFOisi}. Low values of a frequency mismatch between the emitter and receiver quartz (expressed in parts per million, \textit{ppm}) do not disturb the BER too much but increasing value prevent correct communication. 
+
+\begin{figure}[H]
+    \centering
+    \input{fig/cfoISI}
+    \caption{Illustration of the effect of the CFO ISI on the BER curves for a 4-QAM modulation}
+    \label{fig:CFOisi}
+\end{figure}
+
+Next, a sampling time shift is simulated. The impact of this shift is depicted in \autoref{fig:samplingshift}.
+
+\begin{figure}[H]
+    \centering
+    \input{fig/samplingshift}
+    \caption{Effect of the sampling shift on the BER for 4-QAM}
+    \label{fig:samplingshift}
+\end{figure}
+
+
+\subsubsection{Correction algorithms}
+
+As explained later, the sampling time shift is the first unwanted effect that is tackled, thanks to the Gardner algorithm. \autoref{fig:gardner} shows how the Gardner algorithm is able to correct the sampling time shift.
+
+\begin{figure}[H]
+    \centering
+    \input{fig/gardner}
+    \caption{Gardner compensation of the sampling shift without CFO for a 4-QAM modulation}
+    \label{fig:gardner}
+\end{figure}
+
+The main parameter of the Gardner algorithm is the factor $\kappa$. \autoref{fig:gardnerK} shows how increasing $\kappa$ allows to have faster convergence, but at the cost of a less stable estimate. All the subsequent Figures have been generated for a 4-QAM modulation.
+
+\begin{figure}[H]
+    \centering
+    \input{fig/gardnerK}
+    \caption{Influence of $\kappa$ on the convergence of the Gardner algorithm}
+    \label{fig:gardnerK}
+\end{figure}
+
+The Gardner algorithm is robust to CFO, as shown in \autoref{fig:gardnerCFO}. Its convergence is nearly unaffected by the presence of realistic CFO.
+
+\begin{figure}[H]
+    \centering
+    \input{fig/gardnerCFO}
+    \caption{Illustration of the robustness of the Gardner to CFO, $\kappa = 0.1$}
+    \label{fig:gardnerCFO}
+\end{figure}
+
+After the correction of the sampling time shift, the CFO and the Time of Arrival (ToA) are estimated by sending a pilot (a known sequence) in between frames of data. The main parameters are the length of the pilot $N$ and the size of the averaging windows $K$. The following Figures depict the depency of the estimation of the ToA and the CFO on these parameters. It appears that when $N=40$ and $K=16$, both estimations can be trusted when the SNR is high enough ($> \si{5}{dB}$).
+
+\begin{figure}[H]
+    \centering
+    \input{fig/dftoaN}
+    \caption{Impact of the pilot length on the CFO estimation for a 4-QAM}
+    \label{fig:dftoaN}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{fig/stdevt_N}
+    \caption{Impact of the pilot length on the ToA estimation for a 4-QAM}
+    \label{fig:shiftoaN}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{fig/stdevf_K}
+    \caption{Impact of the size of the averaging window $K$ on the CFO estimation for a 4-QAM}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{fig/stdevt_K}
+    \caption{Impact of the size of the averaging window $K$ on the ToA estimation for a 4-QAM}
+\end{figure}
+
+
+On the next two figures, the robustness of the frame acquisition to CFO is clearly visible as it has nearly no impact on the estimations.
+
+\begin{figure}[H]
+    \centering
+    \input{fig/stdevt_CFO}
+    \caption{Impact of the CFO and the sample time shift on the CFO estimation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \input{fig/stdevf_CFO}
+    \caption{Impact of the CFO and the sample time shift on the CFO estimation}
+\end{figure}
+
+
+
+\subsection{Questions}
+
+\subsubsection{Questions regarding the simulation}
+
+\paragraph{Derive analytically the baseband model of the channel including the synchronisation errors.} \mbox{}
+
+Assuming that the oscillators from the emitter and the receiver differ from each other by a pulsation $\Delta \omega$ and a phase shift $\phi$, the signal at the receiver can be written as a function of the complex envelope of the emitted signal $e_s(t)$ (neglecting the noise):
+
+\begin{equation*}
+    r(t) = \Re \left\{ e_s(t) \right\} \cos ( \omega_c t ) + \Im \left\{ e_s(t) \right\} \sin ( \omega_c t )
+\end{equation*}
+
+The complex envelope must be computed to go to the baseband model.
+
+\begin{equation*}
+    \begin{split}
+    e_r(t) & = r(t) \cos \left[ (\omega_c + \Delta \omega) t \right] + r(t) \sin \left[ (\omega_c + \Delta \omega) t \right] \\
+    & =  \cos \left[ (\omega_c + \Delta \omega) t \right] \times \left[\Re \left\{ e_s(t) \right\} \cos ( \omega_c t ) + \Im \left\{ e_s(t) \right\} \sin ( \omega_c t ) \right]\\
+    & +  \sin \left[ (\omega_c + \Delta \omega) t \right] \times \left[\Im \left\{ e_s(t) \right\} \cos ( \omega_c t ) + \Im \left\{ e_s(t) \right\} \sin ( \omega_c t ) \right]
+    \end{split}
+\end{equation*}
+
+Using the Simpsons rules and lowpass filtering out the high frequency components, one can find
+
+\begin{equation*}
+\begin{split}
+    &e_r(t) =  \Re \left\{ e_s(t) \right\} \cos ( \Delta \omega_c t + \phi) - j   \Im \left\{ e_s(t) \right\} \sin ( \Delta \omega_c t + \phi)\\
+    &\hspace{3cm} \Rightarrow e_r(t) = e_s(t) \cdot e^{j\Delta \omega t + \phi}
+\end{split}
+\end{equation*}
+
+Hence, the synchronisation errors can be modelled by a multiplication of the baseband model by $ e^{j\Delta \omega t + \phi}$.
+
+\paragraph{How do you separate the impact of the carrier phase drift and ISI due to the CFO in your simulation?} \mbox{}
+
+The linearly increasing phase shift is manually perfectly compensated after the convolution with the second halfroot filter, taking into account the discarded samples of the convolution. 
+
+\paragraph{How do you simulate the sampling time shift in practice?} \mbox{}
+
+First, the sampling frequency is significantly increased to increase the accuracy. The sampling time shift is then implemented as a shift in the indexes when downsampling the received signal.
+
+\paragraph{How do you select the simulated $E_b/N_0$ ratio?} \mbox{}
+
+The SNR should be sufficiently high so that the various algorithms in the communication chain converge. However, a noiseless simulation is not realistic. The SNR is thus fixed to typical values ranging from 5 to 10 \si{\deci\bel}.
+
+\paragraph{How do you select the lengths of the pilot and data sequences?} \mbox{}
+
+The length of a data sequence is selected to ensure a correct phase interpolation between two pilot sequences. If it is too long, the phase interpolation is may be incorrect since $e^{j (x+ k 2 \pi)} = e^{j x}$ and the residual CFO may be incorrectly determined. 
+The length of the pilot should be sufficiently long to get a correct estimate of the ToA and the CFO. As shown in the results of the simulations, the remaining CFO at SNR greater than \si{5}{dB} is sufficiently low when $N>20$. However, the length and rate of repetitions of the pilot should not be too high because they reduce the channel throughput.
+
+\subsubsection{Questions regarding the communication system}
+
+\paragraph{In which order are the synchronisation effects estimated and compensated? Why?} \mbox{}
+
+The Gardner's algorithm being robust to CFO, it is first used to correct the sampling time shift. Then the CFO and the ToA are handled by the frame acquisition. Between the the pilot sequences, the residual CFO is approximated by linear interpolation.
+
+\paragraph{Explain intuitively how the error is computed in the Gardner algorithm. Why is the Gardner algorithm robust to CFO?} \mbox{}
+
+At a given time, the estimation of the time shift is obtained from the previous estimation weighted by a certain factor. This factor depends on the middle sample between the two time steps. The direction of the correction is given by the sign of the middle value, and the magnitude of the correction is given by its magnitude. The correction will be very low if a zero crossing happens. For example, if the sampling happens too late for a downwards crossing, the value of the correction factor will be negative.
+
+By looking at the mathematical form of the feedback implemented in the Gardner algorithm, it appears that for reasonable values of the CFO, the phases will nearly cancel each other thanks to the conjugate operator.
+
+\paragraph{Explain intuitively why the differential cross-correlator is better suited than the usual cross-correlator? Isn’t it interesting to start the summation at $k$ = 0 (no time shift)?} \mbox{}
+
+The usual cross-correlator is nearly optimal according to the ML estimator but it necessitates a computationally heavy 2D exhaustive search in order to be robust to CFO. Instead, the differential cross-correlator allows for a solution of lower complexity which first estimates the ToA then the CFO.
+
+It is not interesting to start the summation at $k=0$ since the term $D_0 \left[ n \right]$ does not carry any information other than the power of the window.
+
+\newpage
+
+\paragraph{Are the frame and frequency acquisition algorithms optimal? If yes, give the optimisation criterion.} \mbox{}
+
+The algorithm is not optimal because the optimisation is not done for both the ToA and the CFO at the same time. However, it is sufficient when both CFO and the noise have reasonable values, as it is the case in practical applications.
+
+The optimisation criterion is the maximum likelihood of observing the received symbol $y$ knowing the pilot and the CFO.

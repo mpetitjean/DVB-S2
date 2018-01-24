@@ -1,0 +1,58 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=.85\textwidth,
+height=0.27\textheight,
+at={(0.769in,0.485in)},
+scale only axis,
+xmin=0,
+xlabel={Ratio $\frac{E_b}{N_0}$},
+x unit=\decibel,
+ylabel=Standard deviation of the CFO error (ppm),
+xmax=16,
+ymin=0,
+ymax=1,
+axis background/.style={fill=white},
+xmajorgrids,
+ymajorgrids,
+legend style={legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=mycolor1, mark =*]
+  table[row sep=crcr]{%
+0	0.925592752357712\\
+2	0.754975852199369\\
+4	0.551178108303386\\
+6	0.394255932806125\\
+8	0.307701400572419\\
+10	0.22309808861112\\
+12	0.183579478276897\\
+14	0.1412725247807\\
+16	0.11418852089162\\
+};
+\addlegendentry{No CFO, $t_0 = 0$}
+
+\addplot [color=mycolor2, mark = *]
+  table[row sep=crcr]{%
+0.6180792713416	1.1\\
+2	0.737356187875186\\
+4	0.545031610593906\\
+6	0.416896491630336\\
+8	0.315795472749151\\
+10	0.241317508116985\\
+12	0.193110376131994\\
+14	0.1376166115136\\
+16	0.122919490166414\\
+};
+\addlegendentry{CFO = 10 ppm, $t_0 = 0.02 T$}
+
+\end{axis}
+\end{tikzpicture}%

@@ -1,0 +1,53 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+\definecolor{mycolor2}{rgb}{0.85000,0.32500,0.09800}%
+\definecolor{mycolor3}{rgb}{0.92900,0.69400,0.12500}%
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=.85\textwidth,
+height=0.5\textheight,
+at={(0.769in,0.485in)},
+scale only axis,
+xmin=0,
+xmax=16,
+ymin=0,
+ymax=200,
+axis background/.style={fill=white},
+ymajorgrids,
+xmajorgrids,
+legend style={legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=mycolor1]
+  table[row sep=crcr]{%
+11.3641932612985	220\\
+12	191.111704700338\\
+14	0\\
+16	0\\
+};
+\addlegendentry{$N = 10$}
+
+\addplot [color=mycolor2]
+  table[row sep=crcr]{%
+1.40922678103124	220\\
+2	179.73041490192\\
+4	0\\
+16	0\\
+};
+\addlegendentry{$N = 20$}
+
+\addplot [color=mycolor3]
+  table[row sep=crcr]{%
+0	0\\
+16	0\\
+};
+\addlegendentry{$N = 40$}
+
+\end{axis}
+\end{tikzpicture}%
